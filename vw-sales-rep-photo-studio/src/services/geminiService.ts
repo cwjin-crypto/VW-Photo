@@ -1,18 +1,22 @@
 import { GoogleGenAI } from "@google/genai";
 import { BackgroundType } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
+const getApiKey = () => {
+  return process.env.GEMINI_API_KEY || (import.meta as any).env?.VITE_GEMINI_API_KEY || "";
+};
 
 export async function generateSalesRepImages(
   sourceImages: string[], // base64 strings
   backgroundType: BackgroundType,
   name: string
 ) {
-  if (!process.env.GEMINI_API_KEY) {
+  const apiKey = getApiKey();
+  if (!apiKey || apiKey === "undefined" || apiKey === "") {
     console.error("GEMINI_API_KEY is missing from environment variables.");
-    throw new Error("API 키가 설정되지 않았습니다. 관리자에게 문의하세요.");
+    throw new Error("API 키가 설정되지 않았습니다. Vercel 설정(Environment Variables)에서 GEMINI_API_KEY를 추가해주세요.");
   }
 
+  const ai = new GoogleGenAI({ apiKey });
   const model = "gemini-2.5-flash-image";
   
   const backgroundPrompts = {
