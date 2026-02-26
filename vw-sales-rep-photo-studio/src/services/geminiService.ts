@@ -89,12 +89,10 @@ export async function generateSalesRepImages(
     }
   };
 
-  // Run in parallel for better performance
-  const [front, side, full] = await Promise.all([
-    generateShot(shots[0]),
-    generateShot(shots[1]),
-    generateShot(shots[2])
-  ]);
+  // Run sequentially to avoid hitting rate limits on free tier
+  const front = await generateShot(shots[0]);
+  const side = await generateShot(shots[1]);
+  const full = await generateShot(shots[2]);
 
   return { front, side, full };
 }
